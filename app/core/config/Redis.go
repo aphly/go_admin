@@ -1,8 +1,9 @@
 package config
 
 type Redis struct {
-	Single  []Single `yaml:"Single"`
-	Cluster Cluster  `yaml:"Cluster"`
+	//Single  []Single `yaml:"Single"`
+	Cluster Cluster `yaml:"Cluster"`
+	Single  Single  `yaml:"Single"`
 }
 
 type Single struct {

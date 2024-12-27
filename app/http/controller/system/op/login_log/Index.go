@@ -1,4 +1,4 @@
-package role
+package login_log
 
 import (
 	"github.com/gin-gonic/gin"
@@ -8,29 +8,16 @@ import (
 	"strconv"
 )
 
-type Search struct {
-	status int8
-	name   string
-}
-
 func Index(c *gin.Context) {
 	page, _ := strconv.Atoi(c.DefaultQuery("page", "1"))
 	pageSize := app.Config.PageSize
 	offset := (page - 1) * pageSize
 
 	var count int64
-	db := app.Db().Model(&model.AdminRole{})
+	db := app.Db().Model(&model.AdminLoginLog{})
 
-	if status := c.DefaultQuery("status", ""); status != "" {
-		db.Where("status=?", status)
-	}
-
-	if title := c.DefaultQuery("title", ""); title != "" {
-		db.Where("title like ?", title+"%")
-	}
-
-	if level_id := c.DefaultQuery("level_id", ""); level_id != "" {
-		db.Where("level_id = ?", level_id)
+	if ip := c.DefaultQuery("ip", ""); ip != "" {
+		db.Where("ip=?", ip)
 	}
 
 	err := db.Count(&count).Error
@@ -38,9 +25,9 @@ func Index(c *gin.Context) {
 		res.Json(c, res.Code(11), res.Msg(err.Error()))
 		return
 	}
-	var list []model.AdminRole
+	var list []model.AdminLoginLog
 	if count > 0 {
-		err = db.Preload("Level").Offset(offset).Limit(pageSize).Find(&list).Error
+		err = db.Order("created_at desc").Offset(offset).Limit(pageSize).Find(&list).Error
 		if err != nil {
 			res.Json(c, res.Code(12), res.Msg(err.Error()))
 			return

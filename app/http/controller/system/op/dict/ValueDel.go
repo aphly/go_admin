@@ -1,4 +1,4 @@
-package level
+package dict
 
 import (
 	"encoding/json"
@@ -9,12 +9,12 @@ import (
 	"go_admin/app/res"
 )
 
-type del struct {
+type valueDel struct {
 	Ids []int `json:"ids" binding:"required"`
 }
 
-func Del(c *gin.Context) {
-	form := del{}
+func ValueDel(c *gin.Context) {
+	form := valueDel{}
 	err := c.ShouldBind(&form)
 	if err != nil {
 		if jsonErr, ok := err.(*json.UnmarshalTypeError); ok {
@@ -26,7 +26,7 @@ func Del(c *gin.Context) {
 			return
 		}
 	}
-	err = app.Db().Where("id in ?", form.Ids).Delete(&model.AdminLevel{}).Error
+	err = app.Db().Where("id in ?", form.Ids).Delete(&model.AdminDictValue{}).Error
 	if err != nil {
 		res.Json(c, res.Code(11), res.Msg("删除失败"))
 		return

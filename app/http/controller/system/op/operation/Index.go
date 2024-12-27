@@ -1,4 +1,4 @@
-package role
+package operation
 
 import (
 	"github.com/gin-gonic/gin"
@@ -8,29 +8,20 @@ import (
 	"strconv"
 )
 
-type Search struct {
-	status int8
-	name   string
-}
-
 func Index(c *gin.Context) {
 	page, _ := strconv.Atoi(c.DefaultQuery("page", "1"))
 	pageSize := app.Config.PageSize
 	offset := (page - 1) * pageSize
 
 	var count int64
-	db := app.Db().Model(&model.AdminRole{})
+	db := app.Db().Model(&model.AdminOperation{})
 
-	if status := c.DefaultQuery("status", ""); status != "" {
-		db.Where("status=?", status)
+	if uid := c.DefaultQuery("uid", ""); uid != "" {
+		db.Where("uid=?", uid)
 	}
 
-	if title := c.DefaultQuery("title", ""); title != "" {
-		db.Where("title like ?", title+"%")
-	}
-
-	if level_id := c.DefaultQuery("level_id", ""); level_id != "" {
-		db.Where("level_id = ?", level_id)
+	if url := c.DefaultQuery("url", ""); url != "" {
+		db.Where("url like ?", url+"%")
 	}
 
 	err := db.Count(&count).Error
@@ -38,9 +29,9 @@ func Index(c *gin.Context) {
 		res.Json(c, res.Code(11), res.Msg(err.Error()))
 		return
 	}
-	var list []model.AdminRole
+	var list []model.AdminOperation
 	if count > 0 {
-		err = db.Preload("Level").Offset(offset).Limit(pageSize).Find(&list).Error
+		err = db.Preload("Manager").Order("created_at desc").Offset(offset).Limit(pageSize).Find(&list).Error
 		if err != nil {
 			res.Json(c, res.Code(12), res.Msg(err.Error()))
 			return

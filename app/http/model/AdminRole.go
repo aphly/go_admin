@@ -13,5 +13,5 @@ type AdminRole struct {
 	Status   int8       `gorm:"default:0" json:"status"`
 	DataPerm int8       `gorm:"default:0" json:"data_perm,omitempty"`
 	LevelId  uint       `gorm:"default:0" json:"level_id,omitempty"`
-	Level    AdminLevel `gorm:"-:migration"`
+	Level    AdminLevel `gorm:"foreignKey:LevelId;-:migration"`
 }

@@ -49,15 +49,28 @@ func Log(names ...string) *log.Logger {
 	return log.NewLogger(Config.Log, name)
 }
 
-func RedisSingle(keys ...int) *redis.Client {
-	key := 0
-	if len(keys) > 0 {
-		key = keys[0]
-	}
-	if len(Config.Redis.Single) <= 0 {
+//func RedisSingle(keys ...int) *redis.Client {
+//	key := 0
+//	if len(keys) > 0 {
+//		key = keys[0]
+//	}
+//	if len(Config.Redis.Single) <= 0 {
+//		panic("Redis配置错误")
+//	}
+//	return connect.Redis(Config.Redis, key)
+//}
+
+func RedisSingle() *redis.Client {
+	if Config.Redis.Single.Addr == "" {
 		panic("Redis配置错误")
 	}
-	return connect.Redis(Config.Redis, key)
+	return redis.NewClient(&redis.Options{
+		Addr:       Config.Redis.Single.Addr,
+		Password:   Config.Redis.Single.Password,
+		DB:         Config.Redis.Single.Db,
+		PoolSize:   Config.Redis.Single.PoolSize,
+		MaxRetries: Config.Redis.Single.Retries,
+	})
 }
 
 func RedisCluster() *redis.ClusterClient {

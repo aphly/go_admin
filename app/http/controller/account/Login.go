@@ -1,6 +1,7 @@
 package account
 
 import (
+	"encoding/json"
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
 	"go_admin/app"
@@ -23,14 +24,32 @@ func Login(c *gin.Context) {
 	adminManager.Username = loginForm.Username
 	app.Db().Where(&adminManager).Take(&adminManager)
 	if adminManager.Uid == 0 {
-		res.Json(c, res.Code(1), res.Msg("用户不存在"))
+		res.Json(c, res.Code(11), res.Msg("用户不存在"))
+		loginLog(c, loginForm)
+		return
+	}
+	if adminManager.Password == "" {
+		res.Json(c, res.Code(12), res.Msg("请联系管理员"))
+		loginLog(c, loginForm)
 		return
 	}
 	if crypt.ShaEn(loginForm.Password) != adminManager.Password {
-		res.Json(c, res.Code(1), res.Msg("用户名或密码错误"))
+		res.Json(c, res.Code(13), res.Msg("用户名或密码错误"))
+		loginLog(c, loginForm)
 		return
 	}
-	app.Db().Save(&adminManager)
+	if adminManager.Status == 0 {
+		res.Json(c, res.Code(14), res.Msg("用户被冻结"))
+		loginLog(c, loginForm)
+		return
+	}
+	loginSave := model.AdminManager{
+		LastIp:         c.ClientIP(),
+		LastTime:       time.Now().Unix(),
+		UserAgent:      c.Request.Header.Get("User-Agent"),
+		AcceptLanguage: c.Request.Header.Get("Accept-Language"),
+	}
+	app.Db().Model(&model.AdminManager{}).Where("uid=?", adminManager.Uid).Updates(loginSave)
 	var adminManagerRole []model.AdminManagerRole
 	app.Db().InnerJoins("Role", app.Db().Where(&model.AdminRole{Status: 1})).
 		Where("admin_manager_role.manager_uid = ?", adminManager.Uid).Find(&adminManagerRole)
@@ -51,4 +70,17 @@ func Login(c *gin.Context) {
 		"manager_role": adminManagerRole,
 	}))
 	return
+}
+
+func loginLog(c *gin.Context, form account.LoginForm) {
+	marshal, err := json.Marshal(form)
+	if err != nil {
+		return
+	}
+	app.Db().Create(&model.AdminLoginLog{
+		Ip:             c.ClientIP(),
+		Input:          string(marshal),
+		UserAgent:      c.Request.Header.Get("User-Agent"),
+		AcceptLanguage: c.Request.Header.Get("Accept-Language"),
+	})
 }

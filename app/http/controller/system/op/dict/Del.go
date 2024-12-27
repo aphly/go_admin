@@ -1,4 +1,4 @@
-package manager
+package dict
 
 import (
 	"encoding/json"
@@ -6,14 +6,12 @@ import (
 	"github.com/gin-gonic/gin"
 	"go_admin/app"
 	"go_admin/app/http/model"
-	"go_admin/app/http/service/redis"
 	"go_admin/app/res"
 	"gorm.io/gorm"
-	"strconv"
 )
 
 type del struct {
-	Ids []string `json:"ids" binding:"required"`
+	Ids []int `json:"ids" binding:"required"`
 }
 
 func Del(c *gin.Context) {
@@ -29,25 +27,14 @@ func Del(c *gin.Context) {
 			return
 		}
 	}
-
 	err = app.Db().Transaction(func(tx *gorm.DB) error {
-		err := app.Db().Where("uid in ?", form.Ids).Delete(&model.AdminManager{}).Error
+		err := app.Db().Where("id in ?", form.Ids).Delete(&model.AdminDict{}).Error
 		if err != nil {
 			return err
 		}
-		err = app.Db().Where("manager_uid in ?", form.Ids).Delete(&model.AdminManagerRole{}).Error
+		err = app.Db().Where("dict_id in ?", form.Ids).Delete(&model.AdminDictValue{}).Error
 		if err != nil {
 			return err
-		}
-		for _, v := range form.Ids {
-			if err != nil {
-				return err
-			}
-			i, _ := strconv.ParseUint(v, 10, 64)
-			err = redis.AddTokenToBlacklist(c, "jwt:managerBlacklist", int64(i))
-			if err != nil {
-				return err
-			}
 		}
 		return nil
 	})
@@ -55,7 +42,6 @@ func Del(c *gin.Context) {
 		res.Json(c, res.Code(11), res.Msg("删除失败"))
 		return
 	}
-
 	res.Json(c, res.Msg("删除成功"))
 	return
 }

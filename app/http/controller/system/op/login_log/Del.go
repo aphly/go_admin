@@ -1,4 +1,4 @@
-package level
+package login_log
 
 import (
 	"encoding/json"
@@ -26,7 +26,7 @@ func Del(c *gin.Context) {
 			return
 		}
 	}
-	err = app.Db().Where("id in ?", form.Ids).Delete(&model.AdminLevel{}).Error
+	err = app.Db().Where("id in ?", form.Ids).Delete(&model.AdminLoginLog{}).Error
 	if err != nil {
 		res.Json(c, res.Code(11), res.Msg("删除失败"))
 		return

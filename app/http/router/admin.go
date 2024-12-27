@@ -4,6 +4,9 @@ import (
 	"github.com/gin-gonic/gin"
 	"go_admin/app/http/controller/account"
 	"go_admin/app/http/controller/home"
+	"go_admin/app/http/controller/system/op/dict"
+	"go_admin/app/http/controller/system/op/login_log"
+	"go_admin/app/http/controller/system/op/operation"
 	"go_admin/app/http/controller/system/perm/api"
 	"go_admin/app/http/controller/system/perm/level"
 	"go_admin/app/http/controller/system/perm/manager"
@@ -29,42 +32,60 @@ func admin(router *gin.Engine) {
 			rbac.Use(middleware.RbacHandler())
 			{
 				rbac.GET("/home/index", home.Index)
-				rbac.GET("/home/test", home.Test)
 
-				systemPerm := auth.Group("/system/perm")
+				systemPerm := rbac.Group("/system/perm")
 				{
 					systemPerm.GET("/level/all", level.All)
 					systemPerm.POST("/level/add", level.Add)
 					systemPerm.POST("/level/edit", level.Edit)
-					systemPerm.GET("/level/del", level.Del)
+					systemPerm.POST("/level/del", level.Del)
+					systemPerm.POST("/level/rebuild", level.Rebuild)
 
-					systemPerm.GET("/menu/all", menu.All)
-					systemPerm.POST("/menu/add", menu.Add)
-					systemPerm.POST("/menu/edit", menu.Edit)
-					systemPerm.GET("/menu/del", menu.Del)
+					systemPerm.GET("/manager/index", manager.Index)
+					systemPerm.POST("/manager/add", manager.Add)
+					systemPerm.POST("/manager/edit", manager.Edit)
+					systemPerm.POST("/manager/del", manager.Del)
+					systemPerm.GET("/manager/info", manager.Info)
+					systemPerm.POST("/manager/status", manager.Status)
+					systemPerm.Match([]string{"GET", "POST"}, "/manager/role", manager.Role)
 
 					systemPerm.GET("/role/index", role.Index)
 					systemPerm.POST("/role/add", role.Add)
 					systemPerm.POST("/role/edit", role.Edit)
-					systemPerm.GET("/role/del", role.Del)
+					systemPerm.POST("/role/del", role.Del)
 					systemPerm.GET("/role/info", role.Info)
 					systemPerm.GET("/role/all", role.All)
 					systemPerm.Match([]string{"GET", "POST"}, "/role/menu", role.Menu)
 					systemPerm.Match([]string{"GET", "POST"}, "/role/api", role.Api)
 
-					systemPerm.GET("/manager/index", manager.Index)
-					systemPerm.POST("/manager/add", manager.Add)
-					systemPerm.POST("/manager/edit", manager.Edit)
-					systemPerm.GET("/manager/del", manager.Del)
-					systemPerm.GET("/manager/info", manager.Info)
-
-					systemPerm.GET("/manager/blacklist", manager.Blacklist)
-					systemPerm.Match([]string{"GET", "POST"}, "/manager/role", manager.Role)
+					systemPerm.GET("/menu/all", menu.All)
+					systemPerm.POST("/menu/add", menu.Add)
+					systemPerm.POST("/menu/edit", menu.Edit)
+					systemPerm.POST("/menu/del", menu.Del)
 
 					systemPerm.GET("/api/all", api.All)
 					systemPerm.POST("/api/add", api.Add)
 					systemPerm.POST("/api/edit", api.Edit)
-					systemPerm.GET("/api/del", api.Del)
+					systemPerm.POST("/api/del", api.Del)
+				}
+
+				systemOp := rbac.Group("/system/op")
+				{
+					systemOp.GET("/operation/index", operation.Index)
+					//systemPerm.GET("/operation/info", operation.Info)
+					systemOp.POST("/operation/del", operation.Del)
+
+					systemOp.GET("/dict/index", dict.Index)
+					systemOp.POST("/dict/del", dict.Del)
+					systemOp.POST("/dict/add", dict.Add)
+					systemOp.POST("/dict/edit", dict.Edit)
+					systemOp.GET("/dict/value_index", dict.ValueIndex)
+					systemOp.POST("/dict/value_del", dict.ValueDel)
+					systemOp.POST("/dict/value_add", dict.ValueAdd)
+					systemOp.POST("/dict/value_edit", dict.ValueEdit)
+
+					systemOp.GET("/login_log/index", login_log.Index)
+					systemOp.POST("/login_log/del", login_log.Del)
 				}
 
 			}

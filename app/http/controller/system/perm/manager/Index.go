@@ -3,7 +3,9 @@ package manager
 import (
 	"github.com/gin-gonic/gin"
 	"go_admin/app"
+	"go_admin/app/core"
 	"go_admin/app/http/model"
+	"go_admin/app/http/service/gorm"
 	"go_admin/app/res"
 	"strconv"
 )
@@ -16,6 +18,7 @@ type Search struct {
 }
 
 func Index(c *gin.Context) {
+	uid, _ := c.Get("uid")
 	page, _ := strconv.Atoi(c.DefaultQuery("page", "1"))
 	pageSize := app.Config.PageSize
 	offset := (page - 1) * pageSize
@@ -41,21 +44,33 @@ func Index(c *gin.Context) {
 
 	err := db.Count(&count).Error
 	if err != nil {
-		res.Json(c, res.Code(1), res.Msg(err.Error()))
+		res.Json(c, res.Code(11), res.Msg(err.Error()))
 		return
 	}
 	var list []model.AdminManager
+	managerRoleMap := make(map[core.Int64][]model.AdminManagerRole)
 	if count > 0 {
-		err = db.Offset(offset).Limit(pageSize).Find(&list).Error
+		err = db.Scopes(gorm.DataPerm(c, uid)).Order("uid desc").Offset(offset).Limit(pageSize).Find(&list).Error
 		if err != nil {
-			res.Json(c, res.Code(2), res.Msg(err.Error()))
+			res.Json(c, res.Code(12), res.Msg(err.Error()))
 			return
+		}
+		var managerUids []core.Int64
+		for _, v := range list {
+			managerUids = append(managerUids, v.Uid)
+		}
+		var managerRole []model.AdminManagerRole
+		app.Db().InnerJoins("Role", app.Db().Where(&model.AdminRole{Status: 1})).
+			Where("manager_uid in ? and is_half=0", managerUids).Find(&managerRole)
+		for _, v := range managerRole {
+			managerRoleMap[v.ManagerUid] = append(managerRoleMap[v.ManagerUid], v)
 		}
 	}
 
 	res.Json(c, res.Data(gin.H{
-		"list":  list,
-		"count": count,
+		"list":         list,
+		"count":        count,
+		"manager_role": managerRoleMap,
 	}))
 	return
 }

@@ -11,7 +11,7 @@ func All(c *gin.Context) {
 	var list []model.AdminRole
 	err := app.Db().Where("status=1").Find(&list).Error
 	if err != nil {
-		res.Json(c, res.Code(2), res.Msg(err.Error()))
+		res.Json(c, res.Code(12), res.Msg(err.Error()))
 		return
 	}
 	res.Json(c, res.Data(gin.H{

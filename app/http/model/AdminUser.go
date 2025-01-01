@@ -17,15 +17,15 @@ const (
 )
 
 type AdminUser struct {
-	Uid                core.Int64 `gorm:"primarykey" json:"uid,omitempty"`
-	Nickname           string     `gorm:"size:16" json:"nickname,omitempty"`
-	AccessToken        string     `gorm:"index;size:64" json:"access_token,omitempty"`
-	RefreshToken       string     `gorm:"index;size:64" json:"refresh_token,omitempty"`
-	AccessTokenExpire  int64      `gorm:"default:0" json:"-"`
-	RefreshTokenExpire int64      `gorm:"default:0" json:"-"`
-	Avatar             string     `gorm:"size:255" json:"avatar,omitempty"`
-	Remote             int8       `gorm:"default:0" json:"remote,omitempty"`
-	Status             int8       `gorm:"default:1" json:"status,omitempty"`
+	Uid                core.Uint `gorm:"primarykey" json:"uid,omitempty"`
+	Nickname           string    `gorm:"size:16" json:"nickname,omitempty"`
+	AccessToken        string    `gorm:"index;size:64" json:"access_token,omitempty"`
+	RefreshToken       string    `gorm:"index;size:64" json:"refresh_token,omitempty"`
+	AccessTokenExpire  int64     `gorm:"default:0" json:"-"`
+	RefreshTokenExpire int64     `gorm:"default:0" json:"-"`
+	Avatar             string    `gorm:"size:255" json:"avatar,omitempty"`
+	Remote             int8      `gorm:"default:0" json:"remote,omitempty"`
+	Status             int8      `gorm:"default:1" json:"status,omitempty"`
 	core.Model
 }
 
@@ -40,7 +40,7 @@ func (this AdminUser) GetToken(c *gin.Context) (error, string) {
 	return nil, token[7:]
 }
 
-func (this *AdminUser) Add(uid core.Int64) error {
+func (this *AdminUser) Add(uid core.Uint) error {
 	this.Uid = uid
 	this.Nickname = helper.RandStr(10)
 	now := time.Now().Unix()

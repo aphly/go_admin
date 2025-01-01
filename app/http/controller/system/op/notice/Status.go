@@ -1,4 +1,4 @@
-package dict
+package notice
 
 import (
 	"encoding/json"
@@ -28,14 +28,13 @@ func Status(c *gin.Context) {
 		}
 	}
 
-	status := 0
-	if *form.Status == 1 {
+	status := *form.Status
+	if status == 1 {
 		status = 1
 	} else {
 		status = 0
 	}
-
-	err = app.Db().Model(&model.AdminDict{}).Where("id=?", form.Id).Update("status", status).Error
+	err = app.Db().Model(&model.AdminNotice{}).Where("id=?", form.Id).Update("status", status).Error
 	if err != nil {
 		res.Json(c, res.Code(11), res.Msg("操作失败"))
 		return

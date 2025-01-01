@@ -22,7 +22,7 @@ func Menu(c *gin.Context) {
 	}
 	if c.Request.Method == "POST" {
 		uid, _ := c.Get("uid")
-		uidD := uid.(core.Int64)
+		uidD := uid.(core.Uint)
 		form := role.Menu{}
 		err := c.ShouldBind(&form)
 		if err != nil {

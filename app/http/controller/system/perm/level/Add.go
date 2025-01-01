@@ -14,7 +14,7 @@ import (
 
 func Add(c *gin.Context) {
 	uid, _ := c.Get("uid")
-	uidD := uid.(core.Int64)
+	uidD := uid.(core.Uint)
 	form := level.Form{}
 	err := c.ShouldBind(&form)
 	if err != nil {

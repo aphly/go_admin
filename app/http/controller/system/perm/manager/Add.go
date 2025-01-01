@@ -30,7 +30,7 @@ func Add(c *gin.Context) {
 		}
 	}
 	adminManager := model.AdminManager{}
-	adminManager.Uid = helper.NewSnowflake.NextID()
+	adminManager.Uid = helper.NewSnowflake.NextId()
 	adminManager.Username = form.Username
 	adminManager.Nickname = form.Nickname
 	if form.Password != "" {

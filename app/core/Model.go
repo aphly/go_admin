@@ -13,8 +13,27 @@ type Model struct {
 }
 
 type ModelId struct {
-	ID uint `gorm:"primaryKey"  json:"id"`
+	Id uint `gorm:"primaryKey"  json:"id"`
 	Model
+}
+
+type Uint uint
+
+func (this Uint) MarshalJSON() ([]byte, error) {
+	return json.Marshal(strconv.FormatUint(uint64(this), 10))
+}
+
+func (this *Uint) UnmarshalJSON(data []byte) error {
+	var value string
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	parseInt, err := strconv.ParseUint(value, 10, 64)
+	if err != nil {
+		return err
+	}
+	*this = Uint(parseInt)
+	return nil
 }
 
 type Int64 int64
@@ -22,6 +41,7 @@ type Int64 int64
 func (i Int64) MarshalJSON() ([]byte, error) {
 	return json.Marshal(strconv.FormatInt(int64(i), 10))
 }
+
 func (i *Int64) UnmarshalJSON(data []byte) error {
 	var value string
 	if err := json.Unmarshal(data, &value); err != nil {

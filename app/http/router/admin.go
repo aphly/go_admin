@@ -3,10 +3,13 @@ package router
 import (
 	"github.com/gin-gonic/gin"
 	"go_admin/app/http/controller/account"
+	account_notice "go_admin/app/http/controller/account/notice"
 	"go_admin/app/http/controller/home"
 	"go_admin/app/http/controller/system/op/dict"
 	"go_admin/app/http/controller/system/op/login_log"
+	"go_admin/app/http/controller/system/op/notice"
 	"go_admin/app/http/controller/system/op/operation"
+	"go_admin/app/http/controller/system/op/server"
 	"go_admin/app/http/controller/system/perm/api"
 	"go_admin/app/http/controller/system/perm/level"
 	"go_admin/app/http/controller/system/perm/manager"
@@ -25,9 +28,16 @@ func admin(router *gin.Engine) {
 		auth := admin.Group("")
 		auth.Use(middleware.ManagerAuthHandler())
 		{
-			auth.GET("/account/role_menu", account.RoleMenu)
-			auth.POST("/account/avatar", account.Avatar)
-			auth.POST("/account/index", account.Index)
+			accountGroup := auth.Group("/account")
+			{
+				accountGroup.GET("/account/role_menu", account.RoleMenu)
+				accountGroup.POST("/account/avatar", account.Avatar)
+				accountGroup.POST("/account/index", account.Index)
+				accountGroup.GET("/notice/index", account_notice.Index)
+			}
+
+			auth.GET("/dict/info", dict.Info)
+
 			rbac := auth.Group("")
 			rbac.Use(middleware.RbacHandler())
 			{
@@ -72,13 +82,13 @@ func admin(router *gin.Engine) {
 				systemOp := rbac.Group("/system/op")
 				{
 					systemOp.GET("/operation/index", operation.Index)
-					//systemPerm.GET("/operation/info", operation.Info)
 					systemOp.POST("/operation/del", operation.Del)
 
 					systemOp.GET("/dict/index", dict.Index)
 					systemOp.POST("/dict/del", dict.Del)
 					systemOp.POST("/dict/add", dict.Add)
 					systemOp.POST("/dict/edit", dict.Edit)
+					systemOp.POST("/dict/status", dict.Status)
 					systemOp.GET("/dict/value_index", dict.ValueIndex)
 					systemOp.POST("/dict/value_del", dict.ValueDel)
 					systemOp.POST("/dict/value_add", dict.ValueAdd)
@@ -86,6 +96,14 @@ func admin(router *gin.Engine) {
 
 					systemOp.GET("/login_log/index", login_log.Index)
 					systemOp.POST("/login_log/del", login_log.Del)
+
+					systemOp.GET("/notice/index", notice.Index)
+					systemOp.POST("/notice/add", notice.Add)
+					systemOp.POST("/notice/edit", notice.Edit)
+					systemOp.POST("/notice/del", notice.Del)
+					systemOp.POST("/notice/status", notice.Status)
+
+					systemOp.GET("/server/index", server.Index)
 				}
 
 			}

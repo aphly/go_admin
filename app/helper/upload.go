@@ -39,7 +39,7 @@ func (this *Upload) SizeLimit(fileSize int64) bool {
 	return false
 }
 
-func UidPath(uid core.Int64) string {
+func UidPath(uid core.Uint) string {
 	str := fmt.Sprintf("%0*d", 20, uid)
 	splitted := make([]string, len(str)/2)
 	for i := 0; i < len(str); i += 2 {

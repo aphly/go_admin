@@ -22,7 +22,7 @@ func RbacHandler() gin.HandlerFunc {
 			c.Abort()
 			return
 		}
-		c.Set("level_ids", HaveLevelIds(roleId))
+		c.Set("role_id", roleId)
 		c.Next()
 	}
 }
@@ -50,19 +50,4 @@ func checkPermission(roleId, url string, c *gin.Context) int {
 		return 0
 	}
 	return 2
-}
-
-func HaveLevelIds(role_id string) []uint {
-	var level_ids []uint
-	var roleInfo model.AdminRole
-	result := app.Db().Where("id=?", role_id).Take(&roleInfo)
-	if result.RowsAffected == 0 {
-		return level_ids
-	}
-	if roleInfo.DataPerm == 3 {
-		app.Db().Model(&model.AdminLevelPath{}).Where("path_id=?", roleInfo.LevelId).Pluck("level_id", &level_ids)
-	} else if roleInfo.DataPerm == 2 {
-		level_ids = append(level_ids, roleInfo.LevelId)
-	}
-	return level_ids
 }

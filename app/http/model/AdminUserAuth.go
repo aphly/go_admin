@@ -6,16 +6,16 @@ import (
 )
 
 type AdminUserAuth struct {
-	IdType         string     `gorm:"primaryKey;type:char(16)" json:"id_type,omitempty"`
-	Id             string     `gorm:"primaryKey;size:64" form:"id" json:"id,omitempty"`
-	Password       string     `gorm:"size:255" form:"password" json:"-"`
-	Uid            core.Int64 `gorm:"index" json:"uid,omitempty"`
-	LastIp         string     `gorm:"size:64" json:"last_ip,omitempty"`
-	LastTime       int64      `json:"last_time,omitempty"`
-	Note           string     `gorm:"size:255" json:"-"`
-	UserAgent      string     `gorm:"type:text" json:"-"`
-	AcceptLanguage string     `gorm:"size:255" json:"-"`
-	Verified       int8       `gorm:"default:0" json:"verified,omitempty"`
+	IdType         string    `gorm:"primaryKey;type:char(16)" json:"id_type,omitempty"`
+	Id             string    `gorm:"primaryKey;size:64" form:"id" json:"id,omitempty"`
+	Password       string    `gorm:"size:255" form:"password" json:"-"`
+	Uid            core.Uint `gorm:"index" json:"uid,omitempty"`
+	LastIp         string    `gorm:"size:64" json:"last_ip,omitempty"`
+	LastTime       int64     `json:"last_time,omitempty"`
+	Note           string    `gorm:"size:255" json:"-"`
+	UserAgent      string    `gorm:"type:text" json:"-"`
+	AcceptLanguage string    `gorm:"size:255" json:"-"`
+	Verified       int8      `gorm:"default:0" json:"verified,omitempty"`
 	core.Model
 }
 

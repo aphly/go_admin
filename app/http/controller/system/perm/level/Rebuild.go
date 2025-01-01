@@ -11,26 +11,26 @@ func FRebuild(pid uint) {
 	var levelData []model.AdminLevel
 	app.Db().Where("pid=?", pid).Find(&levelData)
 	for _, v := range levelData {
-		app.Db().Where("level_id=?", v.ID).Delete(&model.AdminLevelPath{})
+		app.Db().Where("level_id=?", v.Id).Delete(&model.AdminLevelPath{})
 		level := 0
 		var levelPathData []model.AdminLevelPath
 		app.Db().Where("level_id=?", v.Pid).Order("level asc").Find(&levelPathData)
 		var data []*model.AdminLevelPath
 		for _, v1 := range levelPathData {
 			data = append(data, &model.AdminLevelPath{
-				LevelId: v.ID,
+				LevelId: v.Id,
 				PathId:  v1.PathId,
 				Level:   level,
 			})
 			level++
 		}
 		data = append(data, &model.AdminLevelPath{
-			LevelId: v.ID,
-			PathId:  v.ID,
+			LevelId: v.Id,
+			PathId:  v.Id,
 			Level:   level,
 		})
 		app.Db().Create(data)
-		FRebuild(v.ID)
+		FRebuild(v.Id)
 	}
 }
 

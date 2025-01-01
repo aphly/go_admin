@@ -1,4 +1,4 @@
-package dict
+package notice
 
 import (
 	"encoding/json"
@@ -6,14 +6,14 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
 	"go_admin/app"
-	"go_admin/app/http/form/system/op/dict"
+	"go_admin/app/http/form/system/op/notice"
 	"go_admin/app/http/model"
 	"go_admin/app/res"
 )
 
-func ValueEdit(c *gin.Context) {
+func Edit(c *gin.Context) {
 	//uid, _ := c.Get("uid")
-	form := dict.ValueForm{}
+	form := notice.Form{}
 	err := c.ShouldBind(&form)
 	if err != nil {
 		if jsonErr, ok := err.(*json.UnmarshalTypeError); ok {
@@ -28,7 +28,7 @@ func ValueEdit(c *gin.Context) {
 			return
 		}
 	}
-	err = app.Db().Model(&model.AdminDictValue{}).Where("id=?", form.Id).Updates(form).Error
+	err = app.Db().Model(&model.AdminNotice{}).Where("id=?", form.Id).Updates(form).Error
 	if err != nil {
 		res.Json(c, res.Code(11), res.Msg("保存失败"))
 		return

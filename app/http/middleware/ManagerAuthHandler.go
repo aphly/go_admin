@@ -55,7 +55,7 @@ func ManagerAuthHandler() gin.HandlerFunc {
 	}
 }
 
-func operationLog(uid core.Int64, c *gin.Context) {
+func operationLog(uid core.Uint, c *gin.Context) {
 	if c.Request.Method == "POST" && c.Request.URL.Path != "/admin/system/op/operation/index" && c.Request.URL.Path != "/admin/system/op/operation/del" {
 		contentType := c.Request.Header.Get("Content-Type")
 		RequestData := ""

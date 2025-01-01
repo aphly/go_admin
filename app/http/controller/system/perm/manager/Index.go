@@ -5,7 +5,6 @@ import (
 	"go_admin/app"
 	"go_admin/app/core"
 	"go_admin/app/http/model"
-	"go_admin/app/http/service/gorm"
 	"go_admin/app/res"
 	"strconv"
 )
@@ -18,7 +17,7 @@ type Search struct {
 }
 
 func Index(c *gin.Context) {
-	uid, _ := c.Get("uid")
+	//uid, _ := c.Get("uid")
 	page, _ := strconv.Atoi(c.DefaultQuery("page", "1"))
 	pageSize := app.Config.PageSize
 	offset := (page - 1) * pageSize
@@ -48,14 +47,14 @@ func Index(c *gin.Context) {
 		return
 	}
 	var list []model.AdminManager
-	managerRoleMap := make(map[core.Int64][]model.AdminManagerRole)
+	managerRoleMap := make(map[core.Uint][]model.AdminManagerRole)
 	if count > 0 {
-		err = db.Scopes(gorm.DataPerm(c, uid)).Order("uid desc").Offset(offset).Limit(pageSize).Find(&list).Error
+		err = db.Preload("Level").Order("uid desc").Offset(offset).Limit(pageSize).Find(&list).Error
 		if err != nil {
 			res.Json(c, res.Code(12), res.Msg(err.Error()))
 			return
 		}
-		var managerUids []core.Int64
+		var managerUids []core.Uint
 		for _, v := range list {
 			managerUids = append(managerUids, v.Uid)
 		}

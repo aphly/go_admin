@@ -1,4 +1,4 @@
-package dict
+package notice
 
 import (
 	"encoding/json"
@@ -9,13 +9,12 @@ import (
 	"go_admin/app/res"
 )
 
-type Form struct {
-	Status *int `json:"status" binding:"required"`
-	Id     int  `json:"id" binding:"required"`
+type del struct {
+	Ids []int `json:"ids" binding:"required"`
 }
 
-func Status(c *gin.Context) {
-	form := Form{}
+func Del(c *gin.Context) {
+	form := del{}
 	err := c.ShouldBind(&form)
 	if err != nil {
 		if jsonErr, ok := err.(*json.UnmarshalTypeError); ok {
@@ -28,18 +27,11 @@ func Status(c *gin.Context) {
 		}
 	}
 
-	status := 0
-	if *form.Status == 1 {
-		status = 1
-	} else {
-		status = 0
-	}
-
-	err = app.Db().Model(&model.AdminDict{}).Where("id=?", form.Id).Update("status", status).Error
+	err = app.Db().Where("id in ?", form.Ids).Delete(&model.AdminNotice{}).Error
 	if err != nil {
-		res.Json(c, res.Code(11), res.Msg("操作失败"))
+		res.Json(c, res.Code(11), res.Msg("删除失败"))
 		return
 	}
-	res.Json(c, res.Msg("操作成功"))
+	res.Json(c, res.Msg("删除成功"))
 	return
 }

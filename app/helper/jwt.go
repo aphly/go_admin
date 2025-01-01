@@ -18,7 +18,7 @@ type JWT struct {
 
 type PayloadData struct {
 	Expire    int64
-	Uid       core.Int64
+	Uid       core.Uint
 	TokenType string
 }
 

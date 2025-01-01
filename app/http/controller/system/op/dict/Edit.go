@@ -6,7 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
 	"go_admin/app"
-	"go_admin/app/http/form/system/perm/dict"
+	"go_admin/app/http/form/system/op/dict"
 	"go_admin/app/http/model"
 	"go_admin/app/res"
 )

@@ -22,7 +22,7 @@ func Role(c *gin.Context) {
 	}
 	if c.Request.Method == "POST" {
 		uid, _ := c.Get("uid")
-		uidD := uid.(core.Int64)
+		uidD := uid.(core.Uint)
 		form := manager.Role{}
 		err := c.ShouldBind(&form)
 		if err != nil {
@@ -49,7 +49,7 @@ func Role(c *gin.Context) {
 			var adminRoleMenu []model.AdminManagerRole
 			for _, v := range form.CheckedKeys {
 				adminRoleMenu = append(adminRoleMenu, model.AdminManagerRole{
-					ManagerUid: core.Int64(manager_uid64),
+					ManagerUid: core.Uint(manager_uid64),
 					RoleId:     v,
 					IsHalf:     0,
 					Uid:        uidD,

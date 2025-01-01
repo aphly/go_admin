@@ -31,7 +31,7 @@ func Register(c *gin.Context) {
 	userAuth.LastTime = time.Now().Unix()
 	userAuth.UserAgent = c.Request.Header.Get("User-Agent")
 	userAuth.AcceptLanguage = c.Request.Header.Get("Accept-Language")
-	userAuth.Uid = helper.NewSnowflake.NextID()
+	userAuth.Uid = helper.NewSnowflake.NextId()
 	result := app.Db().Create(&userAuth)
 	if result.Error != nil {
 		res.Json(c, res.Code(1), res.Msg("错误"))

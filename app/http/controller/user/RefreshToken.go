@@ -32,7 +32,7 @@ func RefreshToken(c *gin.Context) {
 		return
 	}
 	user := model.AdminUser{
-		Uid: core.Int64(parseInt),
+		Uid: core.Uint(parseInt),
 	}
 	app.Db().Where(&user).Take(&user)
 	if uid_token[1] != user.RefreshToken {

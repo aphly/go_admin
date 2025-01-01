@@ -7,14 +7,14 @@ import (
 	"github.com/go-playground/validator/v10"
 	"go_admin/app"
 	"go_admin/app/core"
-	"go_admin/app/http/form/system/perm/dict"
+	"go_admin/app/http/form/system/op/dict"
 	"go_admin/app/http/model"
 	"go_admin/app/res"
 )
 
 func Add(c *gin.Context) {
 	uid, _ := c.Get("uid")
-	uid_d := uid.(core.Int64)
+	uid_d := uid.(core.Uint)
 	form := dict.Form{}
 	err := c.ShouldBind(&form)
 	if err != nil {
